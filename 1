@@ -1,0 +1,168 @@
+#include<iostream>
+using namespace std;
+
+struct node {
+    string key;
+    string value;
+    node *left, *right;
+    node() : key(""), value(""), left(NULL), right(NULL) {}
+    node(string x, string y) : key(x), value(y), left(NULL), right(NULL) {}
+};
+
+node* insert(node *root, string key, string value) {
+    if(root == NULL) return new node(key, value);
+    if(key < root->key) root->left = insert(root->left, key, value);
+    else root->right = insert(root->right, key, value);
+    return root;
+}
+
+node* inorderpredecor(node *root) {
+    while(root && root->left) root = root->left;
+    return root;
+}
+
+node* deletedict(node *root, string key) {
+    if(root == NULL) return NULL;
+    if(key < root->key) root->left = deletedict(root->left, key);
+    else if(key > root->key) root->right = deletedict(root->right, key);
+    else {
+        if(root->left == NULL && root->right == NULL) {
+            delete root;
+            return NULL;
+        }
+        else if(root->left == NULL) {
+            node *temp = root->right;
+            delete root;
+            return temp;
+        }
+        else if(root->right == NULL) {
+            node *temp = root->left;
+            delete root;
+            return temp;
+        }
+        else {
+            node *temp = inorderpredecor(root->right);
+            root->key = temp->key;
+            root->value = temp->value;
+            root->right = deletedict(root->right, temp->key);
+        }
+    }
+    return root;
+}
+
+node* copydict(node *root) {
+    if(root == NULL) return NULL;
+    node *temp = new node(root->key, root->value);
+    temp->left = copydict(root->left);
+    temp->right = copydict(root->right);
+    return temp;
+}
+
+node* mirror(node *root) {
+    if(root == NULL) return NULL;
+    node *temp = root->left;
+    root->left = root->right;
+    root->right = temp;
+    mirror(root->left);
+    mirror(root->right);
+    return root;
+}
+
+node* searchdict(node *root, string key) {
+    if(root == NULL) {
+        cout << "Key not found!" << endl;
+        return NULL;
+    }
+    if(key < root->key) return searchdict(root->left, key);
+    else if(key > root->key) return searchdict(root->right, key);
+    else {
+        cout << "Key found! Value: " << root->value << endl;
+        return root;
+    }
+}
+
+void printdict(node *root) {
+    if(root == NULL) return;
+    printdict(root->left);
+    cout << root->key << "\t" << root->value << endl;
+    printdict(root->right);
+}
+
+void freedict(node* root) {
+    if(root == NULL) return;
+    freedict(root->left);
+    freedict(root->right);
+    delete root;
+}
+
+int main() {
+    node *root = NULL;
+    node *copy = NULL;
+    int choice;
+    string key, value;
+
+    do {
+        cout << "\n===== Dictionary Menu =====\n";
+        cout << "1. Insert Key-Value\n";
+        cout << "2. Delete Key\n";
+        cout << "3. Print Dictionary\n";
+        cout << "4. Copy Dictionary\n";
+        cout << "5. Mirror Dictionary\n";
+        cout << "6. Search Key\n";
+        cout << "7. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch(choice) {
+            case 1:
+                cout << "Enter key: ";
+                cin >> key;
+                cout << "Enter value: ";
+                cin >> value;
+                root = insert(root, key, value);
+                break;
+
+            case 2:
+                cout << "Enter key to delete: ";
+                cin >> key;
+                root = deletedict(root, key);
+                break;
+
+            case 3:
+                cout << "\nDictionary contents:\n";
+                printdict(root);
+                break;
+
+            case 4:
+                copy = copydict(root);
+                cout << "\nCopied Dictionary:\n";
+                printdict(copy);
+                break;
+
+            case 5:
+                mirror(root);
+                cout << "\nMirrored Dictionary:\n";
+                printdict(root);
+                break;
+
+            case 6:
+                cout << "Enter key to search: ";
+                cin >> key;
+                searchdict(root, key);
+                break;
+
+            case 7:
+                cout << "Exiting program.\n";
+                break;
+
+            default:
+                cout << "Invalid choice. Try again.\n";
+        }
+
+    } while(choice != 7);
+
+    freedict(root);
+    freedict(copy);
+
+    return 0;
+}
