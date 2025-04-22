@@ -2,14 +2,14 @@
 #include <queue>
 using namespace std;
 
-const int T = 2; // Minimum degree (Order 3 => T = 2)
+const int T = 2;
 
 class BTreeNode {
 public:
-    int keys[2 * T - 1];         // Keys
-    BTreeNode* children[2 * T];  // Children pointers
-    int n;                       // Current number of keys
-    bool leaf;                   // Is true when node is a leaf
+    int keys[2 * T - 1];         
+    BTreeNode* children[2 * T];  
+    int n;                       
+    bool leaf;                   
 
     BTreeNode(bool isLeaf) {
         leaf = isLeaf;
@@ -40,7 +40,7 @@ public:
     void remove(int k);
 };
 
-// Insert function
+
 void BTree::insert(int k) {
     if (root == nullptr) {
         root = new BTreeNode(true);
@@ -60,7 +60,7 @@ void BTree::insert(int k) {
     }
 }
 
-// Insert in non-full node
+
 void BTreeNode::insertNonFull(int k) {
     int i = n - 1;
 
@@ -81,7 +81,7 @@ void BTreeNode::insertNonFull(int k) {
     }
 }
 
-// Split child
+
 void BTreeNode::splitChild(int i, BTreeNode* y) {
     BTreeNode* z = new BTreeNode(y->leaf);
     z->n = T - 1;
@@ -108,7 +108,7 @@ void BTreeNode::splitChild(int i, BTreeNode* y) {
     n++;
 }
 
-// Level order traversal
+
 void BTree::levelOrder() {
     if (root == nullptr) return;
 
@@ -134,14 +134,14 @@ void BTree::levelOrder() {
     }
 }
 
-// Find key index in node
+
 int BTreeNode::findKey(int k) {
     int idx = 0;
     while (idx < n && keys[idx] < k) ++idx;
     return idx;
 }
 
-// Remove key from B-tree
+
 void BTree::remove(int k) {
     if (!root) {
         cout << "Tree is empty.\n";
@@ -159,7 +159,7 @@ void BTree::remove(int k) {
     }
 }
 
-// Remove key from node
+
 void BTreeNode::remove(int k) {
     int idx = findKey(k);
 
@@ -177,7 +177,7 @@ void BTreeNode::remove(int k) {
     }
 }
 
-// Remove from leaf
+
 void BTreeNode::removeFromLeaf(int idx) {
     for (int i = idx + 1; i < n; ++i)
         keys[i - 1] = keys[i];
