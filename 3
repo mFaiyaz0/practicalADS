@@ -1,0 +1,114 @@
+#include <iostream>
+using namespace std;
+
+const int N = 5, M = 5;
+
+int maze[N][M] = {
+    {0, 1, 0, 0, 0},
+    {0, 1, 0, 1, 0},
+    {0, 0, 0, 1, 0},
+    {0, 1, 1, 1, 0},
+    {0, 0, 0, 0, 0}
+};
+
+bool visitedDFS[N][M] = {false};
+bool visitedBFS[N][M] = {false};
+
+int dx[4] = {-1, 1, 0, 0};
+int dy[4] = {0, 0, -1, 1};
+
+bool isValid(int x, int y, bool visited[N][M]) {
+    return x >= 0 && y >= 0 && x < N && y < M &&
+           maze[x][y] == 0 && !visited[x][y];
+}
+
+bool DFS(int x, int y, int gx, int gy) {
+    if (!isValid(x, y, visitedDFS)) return false;
+
+    visitedDFS[x][y] = true;
+
+    if (x == gx && y == gy) {
+        cout << "DFS reached goal at (" << x << "," << y << ")\n";
+        return true;
+    }
+
+    for (int i = 0; i < 4; i++) {
+        if (DFS(x + dx[i], y + dy[i], gx, gy))
+            return true;
+    }
+
+    return false;
+}
+
+void BFS(int sx, int sy, int gx, int gy) {
+    int qx[N * M];
+    int qy[N * M];
+    int front = 0, rear = 0;
+
+    qx[rear] = sx;
+    qy[rear] = sy;
+    rear++;
+    visitedBFS[sx][sy] = true;
+
+    while (front < rear) {
+        int x = qx[front];
+        int y = qy[front];
+        front++;
+
+        if (x == gx && y == gy) {
+            cout << "BFS reached goal at (" << x << "," << y << ")\n";
+            return;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+
+            if (isValid(nx, ny, visitedBFS)) {
+                visitedBFS[nx][ny] = true;
+                qx[rear] = nx;
+                qy[rear] = ny;
+                rear++;
+            }
+        }
+    }
+
+    cout << "BFS could not reach the goal\n";
+}
+
+int main() {
+    int startX = 0, startY = 0;
+    int goalX = 4, goalY = 4;
+    int choice;
+
+    do {
+        cout << "\n===== Maze Solver Menu =====\n";
+        cout << "1. DFS Traversal\n";
+        cout << "2. BFS Traversal\n";
+        cout << "3. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch(choice) {
+            case 1:
+                cout << "DFS Traversal:\n";
+                if (!DFS(startX, startY, goalX, goalY))
+                    cout << "DFS could not reach the goal\n";
+                break;
+
+            case 2:
+                cout << "BFS Traversal:\n";
+                BFS(startX, startY, goalX, goalY);
+                break;
+
+            case 3:
+                cout << "Exiting Maze Solver.\n";
+                break;
+
+            default:
+                cout << "Invalid choice. Please enter a valid option.\n";
+        }
+    } while (choice != 3);
+
+    return 0;
+}
