@@ -3,9 +3,9 @@
 #include <vector>
 using namespace std;
 
-#define V 6  // Number of locations (nodes) in the supply chain
+#define V 6  
 
-// Function to find the node with the minimum distance value
+
 int minDistance(int dist[], bool visited[]) {
     int min = INT_MAX, min_index;
     for (int v = 0; v < V; v++) {
@@ -17,33 +17,28 @@ int minDistance(int dist[], bool visited[]) {
     return min_index;
 }
 
-// Dijkstra's Algorithm to find the shortest path in the supply chain
-void dijkstra(int graph[V][V], int src) {
-    int dist[V]; // Array to store the shortest distance from the source to each node
-    bool visited[V]; // To check if a node has been visited
 
-    // Initialize all distances to infinity and visited to false
+void dijkstra(int graph[V][V], int src) {
+    int dist[V]; 
+    bool visited[V]; 
+
     for (int i = 0; i < V; i++) {
         dist[i] = INT_MAX;
         visited[i] = false;
     }
-    dist[src] = 0; // Distance to the source is 0
+    dist[src] = 0;
 
-    // Find the shortest path for all nodes
     for (int count = 0; count < V - 1; count++) {
-        int u = minDistance(dist, visited); // Get the node with the minimum distance
-        visited[u] = true; // Mark the node as visited
-
-        // Update the distance of the adjacent nodes of the selected node
+        int u = minDistance(dist, visited); 
+        visited[u] = true; 
         for (int v = 0; v < V; v++) {
-            // Update the distance if the node is not visited and the edge exists
             if (!visited[v] && graph[u][v] && dist[u] != INT_MAX && dist[u] + graph[u][v] < dist[v]) {
                 dist[v] = dist[u] + graph[u][v];
             }
         }
     }
 
-    // Output the results
+
     cout << "Node \t Distance from Source\n";
     for (int i = 0; i < V; i++) {
         cout << i << " \t " << dist[i] << endl;
@@ -51,15 +46,15 @@ void dijkstra(int graph[V][V], int src) {
 }
 
 int main() {
-    // Supply Chain Network (Graph with transportation costs between locations)
-    // Example: 0 - Supplier, 1 - Warehouse, 2 - Distribution Center, 3 - Retail Store
+   
+
     int graph[V][V] = {
-        {0, 10, 0, 0, 0, 0},  // Supplier
-        {10, 0, 20, 0, 0, 0},  // Warehouse
-        {0, 20, 0, 5, 0, 0},   // Distribution Center
-        {0, 0, 5, 0, 10, 0},   // Retail Store
-        {0, 0, 0, 10, 0, 15},  // Warehouse 2
-        {0, 0, 0, 0, 15, 0}    // Another warehouse or location
+        {0, 10, 0, 0, 0, 0},  
+        {10, 0, 20, 0, 0, 0}, 
+        {0, 20, 0, 5, 0, 0},  
+        {0, 0, 5, 0, 10, 0},   
+        {0, 0, 0, 10, 0, 15}, 
+        {0, 0, 0, 0, 15, 0}   
     };
 
     int source;
