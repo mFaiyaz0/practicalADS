@@ -1,0 +1,89 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+
+#define V 5  // Number of vertices
+#define E 6  // Number of edges (low edge count)
+
+struct Edge {
+    int src, dest, weight;
+};
+
+struct subset {
+    int parent;
+    int rank;
+};
+
+// Find with path compression
+int find(subset subsets[], int i) {
+    if (subsets[i].parent != i)
+        subsets[i].parent = find(subsets, subsets[i].parent);
+    return subsets[i].parent;
+}
+
+// Union by rank
+void Union(subset subsets[], int x, int y) {
+    int xroot = find(subsets, x);
+    int yroot = find(subsets, y);
+
+    if (subsets[xroot].rank < subsets[yroot].rank)
+        subsets[xroot].parent = yroot;
+    else if (subsets[xroot].rank > subsets[yroot].rank)
+        subsets[yroot].parent = xroot;
+    else {
+        subsets[yroot].parent = xroot;
+        subsets[xroot].rank++;
+    }
+}
+
+bool compare(Edge a, Edge b) {
+    return a.weight < b.weight;
+}
+
+void KruskalMST(Edge edges[]) {
+    Edge result[V];  // MST will have V-1 edges
+    int e = 0; // Index for result[]
+    int i = 0; // Index for sorted edges
+
+    sort(edges, edges + E, compare);
+
+    subset subsets[V];
+    for (int v = 0; v < V; v++) {
+        subsets[v].parent = v;
+        subsets[v].rank = 0;
+    }
+
+    while (e < V - 1 && i < E) {
+        Edge next = edges[i++];
+        int x = find(subsets, next.src);
+        int y = find(subsets, next.dest);
+
+        if (x != y) {
+            result[e++] = next;
+            Union(subsets, x, y);
+        }
+    }
+
+    int totalCost = 0;
+    cout << "edge \t weight\n";
+    for (i = 0; i < e; i++) {
+        cout << result[i].src << " - " << result[i].dest << "\t" << result[i].weight << endl;
+        totalCost += result[i].weight;
+    }
+    cout << "Minimum cost\t" << totalCost << endl;
+}
+
+int main() {
+    // Sparse graph with fewer edges
+    Edge edges[E] = {
+        {0, 1, 2},
+        {0, 3, 6},
+        {1, 2, 3},
+        {1, 3, 8},
+        {1, 4, 5},
+        {2, 4, 7}
+    };
+
+    KruskalMST(edges);
+    return 0;
+}
